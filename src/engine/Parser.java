@@ -20,7 +20,7 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public boolean runNextCommand(Game game) {
+    public boolean runNextCommand() {
         String inputLine;   // will hold the full input line
         String[] args = null;
 
@@ -30,18 +30,20 @@ public class Parser
 
         // Find up to two words on the line.
         Scanner tokenizer = new Scanner(inputLine);
-        String cmd = tokenizer.next();
+        String cmd = tokenizer.next().toLowerCase();
         ArrayList<String> argsList = new ArrayList<String>();
         while (tokenizer.hasNext()) {
-            argsList.add(tokenizer.next());
+            argsList.add(tokenizer.next().toLowerCase());
         }
         tokenizer.close();
         args = argsList.toArray(new String[0]);
         if (cmd.equals("quit")) return true;
         
         Command c = commands.get(cmd);
-        if (game.getPlayer().getRoom().override.containsKey(cmd)) c = game.getPlayer().getRoom().override.get(cmd);
-        c.run(game, args);
+        if (Game.instance.getPlayer().getRoom().override.containsKey(cmd)) c = Game.instance.getPlayer().getRoom().override.get(cmd);
+        if (c==null) {
+            System.out.println("\"" + cmd + "\" is an invalid command. For a list of commands, type \"help\".");
+        } else c.run(args);
         return false;
     }
 }
